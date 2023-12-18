@@ -21,7 +21,7 @@ def index():
     return render_template("board.html", board=board)
 
 @app.route('/check-word')
-def index():
+def check_word():
     """Check if word is valid"""
 
     # guess guess from query string
