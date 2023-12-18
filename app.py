@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, session
+from flask import Flask, request, render_template, redirect, session, jsonify
 from boggle import Boggle
 
 # Flask setup
@@ -30,5 +30,7 @@ def check_word():
     # check guess: "ok", "not-on-board", "not-word"
     result = boggle_game.check_valid_word(board, word_guess)
 
-    return render_template("board.html", board=board)
+    # return result in a JSON payload
+    payload = {"result": result}
+    return jsonify(payload)
 
