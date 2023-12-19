@@ -1,10 +1,13 @@
 // get elements we'll be working with
 const $form = $("form");
+const $formFields = $("fieldset");
 const $wordInput = $("#word-guess");
 const $resultContainer = $("#result");
 const $score = $("#score");
+const $time = $("#time");
 
 let score = 0;
+let gameActive = true;
 
 // make a request to the server to see if the word is valid
 async function checkWord(word) {
@@ -39,38 +42,64 @@ function showResult(result, word) {
 function updateScore(result, word, score) {
     if (result === "ok") {
         score += word.length;
-        showNewScore(score);
-        console;
+        $score.text(score);
     }
 
     return score;
-}
-
-function showNewScore(score) {
-    $score.text(score);
 }
 
 async function processWordSubmission(event) {
     // prevent form from refreshing page
     event.preventDefault();
 
-    console.log("hello");
-    console.log($wordInput.val());
-
     let word = $wordInput.val();
     word = word.toLowerCase();
 
-    // make a request to the server to see if word is valid
-    let result = await checkWord(word);
+    // if game is active
+    if (gameActive) {
+        // make a request to the server to see if word is valid
+        let result = await checkWord(word);
 
-    // update & show score based on the result
-    score = updateScore(result, word, score);
+        // update & show score based on the result
+        score = updateScore(result, word, score);
 
-    // show the result to the user in the DOM
-    showResult(result, word);
+        // show the result to the user in the DOM
+        showResult(result, word);
+    }
 
     // reset the word input
     $wordInput.val("");
 }
 
 $form.on("submit", processWordSubmission);
+
+/* Timer code: */
+let timeLeft = 20; // game duration in seconds
+
+function countdown() {
+    // Decrement timer
+    --timeLeft;
+
+    // Update display
+    $time.text(timeLeft);
+
+    // Check if timer has reached 0
+    if (timeLeft === 0) {
+        clearInterval(timerInterval); // Stop the interval
+        gameActive = false;
+        disableForm();
+    }
+}
+
+// Set up the interval
+const timerInterval = setInterval(countdown, 1000); // Execute countdown every second
+
+function disableForm() {
+    // update messaging
+    $resultContainer.removeClass("alert-success alert-danger alert-warning alert-info");
+    $resultContainer.text("Time's up!");
+    $resultContainer.addClass("alert-dark");
+
+    // disable form
+    $formFields.prop("disabled", true);
+}

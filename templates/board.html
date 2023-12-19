@@ -1,10 +1,14 @@
 {% extends 'base.html' %} 
 {% block title %}Boggle{% endblock %} 
 {% block content %}
-<h1>Boggle</h1>
-<p>Find some words in the boggle board below!</p>
-<h4>Score: <b id="score">0</b></h4>
-<table class="table table-bordered">
+<div class="container">
+  <h1>Boggle</h1>
+  <p>Find some words in the boggle board below!</p>
+  <div class="row stats time-score">
+    <div class="col-6">Time left: <b id="time">60</b>s</div>
+    <div class="col-6">Score: <b id="score">0</b></div>
+  </div>
+  <table class="table table-bordered">
     <tbody>
             {% for row in board %}
                 <tr>
@@ -14,16 +18,19 @@
                 </tr>
             {% endfor %}
     </tbody>
-</table>
-<div id="result" class="alert alert-info" role="alert">
-How many words can you find? 
-</div>
-<form action="">
-  <div class="form-group">
-    <label for="word-guess">Enter a word:</label>
-    <input type="text" name="word-guess" id="word-guess">
-    <small id="emailHelp" class="form-text text-muted">Words must be three or more letters.</small>
+  </table>
+  <div id="result" class="alert alert-info" role="alert">
+  How many words can you find? 
   </div>
-  <button type="submit" class="btn btn-primary">Check Word</button>
-</form>
+  <form action="">
+    <fieldset>
+    <div class="form-group">
+      <label for="word-guess">Enter a word:</label>
+      <input type="text" name="word-guess" id="word-guess" autocomplete="off">
+      <small id="emailHelp" class="form-text text-muted">Words must be three or more letters.</small>
+    </div>
+    <button type="submit" class="btn btn-primary">Check Word</button>
+    </fieldset>
+  </form>
+</div>
 {% endblock %}
