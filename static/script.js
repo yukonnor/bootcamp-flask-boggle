@@ -1,10 +1,13 @@
 // get elements we'll be working with
-$form = $("form");
-$wordInput = $("#word-guess");
-$resultContainer = $("#result");
+const $form = $("form");
+const $wordInput = $("#word-guess");
+const $resultContainer = $("#result");
+const $score = $("#score");
+
+let score = 0;
 
 // make a request to the server to see if the word is valid
-async function check_word(word) {
+async function checkWord(word) {
     // make a request to /check-word with the word as
     const response = await axios.get("/check-word", { params: { "word-guess": word } });
 
@@ -13,7 +16,7 @@ async function check_word(word) {
     return response.data["result"];
 }
 
-function show_result(result, word) {
+function showResult(result, word) {
     // depending on the result, update the class and text of the container
 
     // Remove all alert classes so that we can add the class that we're updating to
@@ -33,7 +36,21 @@ function show_result(result, word) {
     }
 }
 
-async function process_word_submission(event) {
+function updateScore(result, word, score) {
+    if (result === "ok") {
+        score += word.length;
+        showNewScore(score);
+        console;
+    }
+
+    return score;
+}
+
+function showNewScore(score) {
+    $score.text(score);
+}
+
+async function processWordSubmission(event) {
     // prevent form from refreshing page
     event.preventDefault();
 
@@ -41,12 +58,19 @@ async function process_word_submission(event) {
     console.log($wordInput.val());
 
     let word = $wordInput.val();
+    word = word.toLowerCase();
 
     // make a request to the server to see if word is valid
-    let result = await check_word(word);
+    let result = await checkWord(word);
+
+    // update & show score based on the result
+    score = updateScore(result, word, score);
 
     // show the result to the user in the DOM
-    show_result(result, word);
+    showResult(result, word);
+
+    // reset the word input
+    $wordInput.val("");
 }
 
-$form.on("submit", process_word_submission);
+$form.on("submit", processWordSubmission);

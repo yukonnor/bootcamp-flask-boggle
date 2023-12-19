@@ -3,7 +3,8 @@
 {% block content %}
 <h1>Boggle</h1>
 <p>Find some words in the boggle board below!</p>
-<table>
+<h4>Score: <b id="score">0</b></h4>
+<table class="table table-bordered">
     <tbody>
             {% for row in board %}
                 <tr>
@@ -18,15 +19,11 @@
 How many words can you find? 
 </div>
 <form action="">
-<label for="word-guess">Enter a word:</label>
-<input type="text" name="word-guess" id="word-guess">
-<button type="submit">Check Word</button>
+  <div class="form-group">
+    <label for="word-guess">Enter a word:</label>
+    <input type="text" name="word-guess" id="word-guess">
+    <small id="emailHelp" class="form-text text-muted">Words must be three or more letters.</small>
+  </div>
+  <button type="submit" class="btn btn-primary">Check Word</button>
 </form>
-
-<script
-  src="https://code.jquery.com/jquery-3.7.1.min.js"
-  integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-  crossorigin="anonymous"></script>
-<script src="https://unpkg.com/axios/dist/axios.js"></script>
-<script src="static/script.js"></script>
 {% endblock %}
