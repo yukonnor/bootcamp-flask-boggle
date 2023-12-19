@@ -74,7 +74,7 @@ async function processWordSubmission(event) {
 $form.on("submit", processWordSubmission);
 
 /* Timer code: */
-let timeLeft = 20; // game duration in seconds
+let timeLeft = 60; // game duration in seconds
 
 function countdown() {
     // Decrement timer
