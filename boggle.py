@@ -14,7 +14,7 @@ class Boggle():
         """Read and return all words in dictionary."""
 
         dict_file = open(dict_path)
-        words = [w.strip() for w in dict_file]
+        words = [w.strip() for w in dict_file if len(w) > 2]
         dict_file.close()
         return words
 

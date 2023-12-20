@@ -8,12 +8,12 @@
     <div class="col-6">Time left: <b id="time">60</b>s</div>
     <div class="col-6">Score: <b id="score">0</b></div>
   </div>
-  <table class="table table-bordered">
+  <table class="table table-borderless col-sm-6">
     <tbody>
             {% for row in board %}
                 <tr>
                     {% for letter in row %}
-                        <td>{{ letter }}</td>
+                        <td><div class="letter">{{ letter }}</div></td>
                     {% endfor %}
                 </tr>
             {% endfor %}

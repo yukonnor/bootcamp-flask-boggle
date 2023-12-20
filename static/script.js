@@ -8,9 +8,11 @@ const $time = $("#time");
 const $highScore = $("#high-score");
 const $timesPlayed = $("#times-played");
 
+// Q: OK to use global variables like this? If not, how to avoid?
 let score = 0;
 let timesPlayed = 0;
 let gameActive = true;
+let foundWords = [];
 
 let timeLeft = 30; // game duration in seconds
 
@@ -54,16 +56,27 @@ function showResult(result, word) {
     } else if (result === "not-word") {
         $resultContainer.html(`Sorry. <b>${word}</b> isn't in our dictionary`);
         $resultContainer.addClass("alert-danger");
+    } else if (result === "already-found") {
+        $resultContainer.html(`Nice try! <b>${word}</b> has already been found`);
+        $resultContainer.addClass("alert-danger");
     }
 }
 
-function updateScore(result, word, score) {
-    if (result === "ok") {
-        score += word.length;
-        $score.text(score);
-    }
+function updateScore(word, score) {
+    score += word.length;
 
+    // Q: Should I update the display in a separate function if it's just one line like this?
+    $score.text(score);
     return score;
+}
+
+function checkFoundWords(word) {
+    if (foundWords.includes(word)) {
+        return "already-found";
+    } else {
+        foundWords.push(word);
+        return "ok";
+    }
 }
 
 async function processWordSubmission(event) {
@@ -78,8 +91,15 @@ async function processWordSubmission(event) {
         // make a request to the server to see if word is valid
         let result = await checkWord(word);
 
+        // if valid word, check if word has alread been found
+        if (result === "ok") {
+            result = checkFoundWords(word);
+        }
+
         // update & show score based on the result
-        score = updateScore(result, word, score);
+        if (result === "ok") {
+            score = updateScore(word, score);
+        }
 
         // show the result to the user in the DOM
         showResult(result, word);

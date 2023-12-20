@@ -43,7 +43,7 @@ def update_stats():
     # receive score from the client
     score = request.json.get('score')
 
-    # Get the high score and count times played from the session (or set if doesn't exist)
+    # get the high score and count times played from the session (or set if doesn't exist)
     if session.get('high_score'):
         session['high_score'] = score if (score > session['high_score']) else session['high_score']
         session['times_played'] += 1
@@ -51,15 +51,13 @@ def update_stats():
         session['high_score'] = score
         session['times_played'] = 1
 
-    # print(session)
-
     # return result in a JSON payload
     payload = {'high_score': session['high_score'], 'times_played': session['times_played'] }
     return jsonify(payload)
 
 @app.route('/stats',)
 def get_stats():
-    """Provide stats from session to client when page first loads."""
+    """Provide stats (stored in session) to client when requested"""
 
     # Set the high score and count times played if they don't exist in the session
     if not session.get('high_score'):
