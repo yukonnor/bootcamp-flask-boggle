@@ -5,19 +5,34 @@ const $wordInput = $("#word-guess");
 const $resultContainer = $("#result");
 const $score = $("#score");
 const $time = $("#time");
-const $highScore = $("high-score");
-const $timesPlayed = $("times-played");
+const $highScore = $("#high-score");
+const $timesPlayed = $("#times-played");
 
 let score = 0;
 let timesPlayed = 0;
 let gameActive = true;
+
+let timeLeft = 30; // game duration in seconds
+
+/* When page loads, get the user's stats from the session */
+async function getStats() {
+    // make a POST request to /check-word with the word as
+    const response = await axios.get("/stats");
+
+    console.log(`getStats() response.data: ${JSON.stringify(response.data)}`);
+
+    $highScore.text(response.data["high_score"]);
+    $timesPlayed.text(response.data["times_played"]);
+}
+
+getStats();
 
 // make a request to the server to see if the word is valid
 async function checkWord(word) {
     // make a request to /check-word with the word as
     const response = await axios.get("/check-word", { params: { "word-guess": word } });
 
-    console.log(`check_word() response.data: ${JSON.stringify(response.data)}`);
+    console.log(`checkWord() response.data: ${JSON.stringify(response.data)}`);
 
     return response.data["result"];
 }
@@ -76,9 +91,7 @@ async function processWordSubmission(event) {
 
 $form.on("submit", processWordSubmission);
 
-/* Timer code: */
-let timeLeft = 60; // game duration in seconds
-
+/* Timer Code */
 function countdown() {
     // Decrement timer
     --timeLeft;
@@ -110,11 +123,15 @@ function disableForm() {
     $formFields.prop("disabled", true);
 }
 
+/* Submit score to server once time runs out */
 async function submitScore(score) {
     // make a POST request to /check-word with the word as
-    const response = await axios.post("/check-word", { params: { "word-guess": word } });
+    const response = await axios.post("/update-stats", { score: score });
 
-    console.log(`check_word() response.data: ${JSON.stringify(response.data)}`);
+    console.log(`submitScore() response.data: ${JSON.stringify(response.data)}`);
+
+    $highScore.text(response.data["high_score"]);
+    $timesPlayed.text(response.data["times_played"]);
 
     return response.data["result"];
 }

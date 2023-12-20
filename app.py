@@ -1,9 +1,11 @@
 from flask import Flask, request, render_template, redirect, session, jsonify
+from flask_debugtoolbar import DebugToolbarExtension
 from boggle import Boggle
 
 # Flask setup
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "abc123"
+debug = DebugToolbarExtension(app)
 
 # init boggle game and board
 boggle_game = Boggle()
@@ -33,4 +35,39 @@ def check_word():
     # return result in a JSON payload
     payload = {"result": result}
     return jsonify(payload)
+
+@app.route('/update-stats', methods=["POST"])
+def update_stats():
+    """Update stats (sent from client) after the game is complete."""
+
+    # receive score from the client
+    score = request.json.get('score')
+
+    # Get the high score and count times played from the session (or set if doesn't exist)
+    if session.get('high_score'):
+        session['high_score'] = score if (score > session['high_score']) else session['high_score']
+        session['times_played'] += 1
+    else:
+        session['high_score'] = score
+        session['times_played'] = 1
+
+    # print(session)
+
+    # return result in a JSON payload
+    payload = {'high_score': session['high_score'], 'times_played': session['times_played'] }
+    return jsonify(payload)
+
+@app.route('/stats',)
+def get_stats():
+    """Provide stats from session to client when page first loads."""
+
+    # Set the high score and count times played if they don't exist in the session
+    if not session.get('high_score'):
+        session['high_score'] = 0
+        session['times_played'] = 0
+
+    # return result in a JSON payload
+    payload = {'high_score': session['high_score'], 'times_played': session['times_played'] }
+    return jsonify(payload)
+    
 
