@@ -1,10 +1,13 @@
+.container {
+    max-width: 500px;
+}
 table {
     border-radius: 0.75rem;
     border: 2px solid #2125290d;
 }
+
 td .letter {
     text-align: center;
-    aspect-ratio: 1 / 1;
     color: rgb(11, 0, 167);
     font-size: 1.5rem;
     background: #007bff17;
