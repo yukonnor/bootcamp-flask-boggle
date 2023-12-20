@@ -1,6 +1,6 @@
 """Utilities related to Boggle game."""
 
-from random import choice
+from random import choice, shuffle
 import string
 
 
@@ -21,10 +21,18 @@ class Boggle():
     def make_board(self):
         """Make and return a random boggle board."""
 
+        dice = ['AAAFRS','AAEEEE','AAFIRS','ADENNN','AEEEEM',
+                'AEEGMU','AEGMNN','AFIRSY','BJKQXZ','CCNSTW',
+                'CEIILT','CEILPT','CEIPST','DHHNOT','DHHLOR',
+                'DHLNOR','DDLNOR','EIIITT','EMOTTT','ENSSSU',
+                'FIPRSY','GORRVW','HIPRRY','NOOTUW','OOOTTU']
+        
+        shuffle(dice)
+
         board = []
 
         for y in range(5):
-            row = [choice(string.ascii_uppercase) for i in range(5)]
+            row = [choice(dice[y + x]) for x in range(5)]
             board.append(row)
 
         return board
