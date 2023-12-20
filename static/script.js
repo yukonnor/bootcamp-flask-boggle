@@ -5,8 +5,11 @@ const $wordInput = $("#word-guess");
 const $resultContainer = $("#result");
 const $score = $("#score");
 const $time = $("#time");
+const $highScore = $("high-score");
+const $timesPlayed = $("times-played");
 
 let score = 0;
+let timesPlayed = 0;
 let gameActive = true;
 
 // make a request to the server to see if the word is valid
@@ -81,6 +84,7 @@ function countdown() {
     --timeLeft;
 
     // Update display
+    // TODO: Show time left in badge. Change badge color when <10s.
     $time.text(timeLeft);
 
     // Check if timer has reached 0
@@ -88,12 +92,14 @@ function countdown() {
         clearInterval(timerInterval); // Stop the interval
         gameActive = false;
         disableForm();
+        submitScore(score);
     }
 }
 
 // Set up the interval
 const timerInterval = setInterval(countdown, 1000); // Execute countdown every second
 
+/* Disable the form when the timer is done */
 function disableForm() {
     // update messaging
     $resultContainer.removeClass("alert-success alert-danger alert-warning alert-info");
@@ -102,4 +108,13 @@ function disableForm() {
 
     // disable form
     $formFields.prop("disabled", true);
+}
+
+async function submitScore(score) {
+    // make a POST request to /check-word with the word as
+    const response = await axios.post("/check-word", { params: { "word-guess": word } });
+
+    console.log(`check_word() response.data: ${JSON.stringify(response.data)}`);
+
+    return response.data["result"];
 }
