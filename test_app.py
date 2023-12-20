@@ -94,31 +94,43 @@ class FlaskTests(TestCase):
 
             resp = client.post('/update-stats', json={"score": 8}, content_type='application/json')
             payload = resp.json
-
-            print(f"payload: {payload}")
-            print(f"resp: {resp}")
                               
             self.assertEqual(resp.status_code, 200)
             self.assertEqual(payload['high_score'], 10) 
             self.assertEqual(payload['times_played'], 11)                        
     
-    # def test_session_info(self):
-    #     with app.test_client() as client:
-    #         resp = client.get("/")
+    def test_get_stats_no_history(self):
+        with app.test_client() as client:
+            with client.session_transaction() as change_session:
+                change_session['board'] = self.board
 
-    #         self.assertEqual(resp.status_code, 200)
-    #         # simple as checking what's in the session dictionary
-    #         self.assertEqual(session['count'], 1)
+            resp = client.get('/stats')
+            payload = resp.get_data(as_text=True) 
 
-    # def test_session_info_set(self):
-    #         with app.test_client() as client:
-    #             # populate the session data here:
-    #             with client.session_transaction() as change_session:
-    #                 change_session['count'] = 999
+            print(f"payload: {payload}")
+            print(f"resp: {resp}")
+                              
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(session['high_score'], 0) 
+            self.assertEqual(session['times_played'], 0)
+            self.assertIn('"high_score": 0', payload)    
+            self.assertIn('"times_played": 0', payload)      
 
-    #             # Now those changes will be in Flask's `session`
-    #             resp = client.get("/")
+    def test_get_stats_has_history(self):
+        with app.test_client() as client:
+            with client.session_transaction() as change_session:
+                change_session['board'] = self.board
+                change_session['high_score'] = 10
+                change_session['times_played'] = 2
 
-    #             self.assertEqual(resp.status_code, 200)
-    #             self.assertEqual(session['count'], 1000)
+            resp = client.get('/stats')
+            payload = resp.get_data(as_text=True) 
 
+            print(f"payload: {payload}")
+            print(f"resp: {resp}")
+                              
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(session['high_score'], 10) 
+            self.assertEqual(session['times_played'], 2)
+            self.assertIn('"high_score": 10', payload)    
+            self.assertIn('"times_played": 2', payload)    
