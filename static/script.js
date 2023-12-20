@@ -14,7 +14,7 @@ let timesPlayed = 0;
 let gameActive = true;
 let foundWords = [];
 
-let timeLeft = 30; // game duration in seconds
+let timeLeft = 60; // game duration in seconds
 
 /* When page loads, get the user's stats from the session */
 async function getStats() {

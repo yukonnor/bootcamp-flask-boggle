@@ -11,3 +11,7 @@ td .letter {
     border-radius: 0.5rem;
     border: 2px solid #2125290d;
 }
+
+.list-group {
+    margin-bottom: 40px;
+}

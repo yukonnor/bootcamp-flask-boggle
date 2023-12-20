@@ -1,21 +1,29 @@
 from flask import Flask, request, render_template, redirect, session, jsonify
-from flask_debugtoolbar import DebugToolbarExtension
+# from flask_debugtoolbar import DebugToolbarExtension
 from boggle import Boggle
 
 # Flask setup
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "abc123"
-debug = DebugToolbarExtension(app)
+# debug = DebugToolbarExtension(app)
+# app.config['TESTING'] = True
+# app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 
-# init boggle game and board
+# init boggle game
 boggle_game = Boggle()
-board = boggle_game.make_board()
-print(board)
-
 
 @app.route('/')
 def index():
-    """Show boggle board and word guess form."""
+    """
+    Create & show boggle board and other page elements:
+    - word guess form
+    - word guess feedback 
+    - stats
+    """
+
+    # init board
+    board = boggle_game.make_board()
+    print(board)
 
     # Store board in the session
     session['board'] = board
@@ -26,8 +34,11 @@ def index():
 def check_word():
     """Check if word is valid"""
 
-    # guess guess from query string
+    # get guess from query string
     word_guess = request.args["word-guess"]
+
+    # get board from session
+    board = session['board']
 
     # check guess: "ok", "not-on-board", "not-word"
     result = boggle_game.check_valid_word(board, word_guess)
@@ -44,6 +55,7 @@ def update_stats():
     score = request.json.get('score')
 
     # get the high score and count times played from the session (or set if doesn't exist)
+    # Q: OK for this logic to be here or should it be in separate function? 
     if session.get('high_score'):
         session['high_score'] = score if (score > session['high_score']) else session['high_score']
         session['times_played'] += 1
