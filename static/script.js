@@ -1,4 +1,5 @@
 // get elements we'll be working with
+// Q: Is setting global jQuery vars like this best practice? Starter code on HackerNews used this technique.
 const $form = $("form");
 const $formFields = $("fieldset");
 const $wordInput = $("#word-guess");
@@ -14,7 +15,8 @@ let timesPlayed = 0;
 let gameActive = true;
 let foundWords = [];
 
-let timeLeft = 60; // game duration in seconds
+const GAME_DURATION = 60; // seconds
+let timeLeft = GAME_DURATION; // Q: how to use this in function scope when function used in interval (doesn't return anything)
 
 /* When page loads, get the user's stats from the session */
 async function getStats() {
@@ -23,12 +25,15 @@ async function getStats() {
 
     console.log(`getStats() response.data: ${JSON.stringify(response.data)}`);
 
+    // Q: Should I update the DOM in a separate function? Should function be in separate file?
     $highScore.text(response.data["high_score"]);
     $timesPlayed.text(response.data["times_played"]);
 }
 
+// Q: Best location for this function call? I want to call it on page load.
 getStats();
 
+/* When word is submitted, check it against the server */
 // make a request to the server to see if the word is valid
 async function checkWord(word) {
     // make a request to /check-word with the word as
@@ -127,6 +132,8 @@ function countdown() {
         disableForm();
         submitScore(score);
     }
+
+    return timeLeft;
 }
 
 // Set up the interval
