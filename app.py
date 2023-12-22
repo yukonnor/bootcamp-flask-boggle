@@ -1,13 +1,13 @@
 from flask import Flask, request, render_template, redirect, session, jsonify
-# from flask_debugtoolbar import DebugToolbarExtension
+from flask_debugtoolbar import DebugToolbarExtension
 from boggle import Boggle
 
 # Flask setup
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "abc123"
-# debug = DebugToolbarExtension(app)
-# app.config['TESTING'] = True
-# app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
+debug = DebugToolbarExtension(app)
+app.config['TESTING'] = True
+app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 
 # init boggle game
 boggle_game = Boggle()
@@ -55,7 +55,7 @@ def update_stats():
     score = request.json.get('score')
 
     # get the high score and count times played from the session (or set if doesn't exist)
-    # Q: OK for this logic to be here or should it be in separate function? 
+    # TODO: in the future this will be best placed in the controller.
     if session.get('high_score'):
         session['high_score'] = score if (score > session['high_score']) else session['high_score']
         session['times_played'] += 1

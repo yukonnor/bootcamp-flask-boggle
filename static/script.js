@@ -1,5 +1,4 @@
 // get elements we'll be working with
-// Q: Is setting global jQuery vars like this best practice? Starter code on HackerNews used this technique.
 const $form = $("form");
 const $formFields = $("fieldset");
 const $wordInput = $("#word-guess");
@@ -9,14 +8,13 @@ const $time = $("#time");
 const $highScore = $("#high-score");
 const $timesPlayed = $("#times-played");
 
-// Q: OK to use global variables like this? If not, how to avoid?
+// global variables for the game
 let score = 0;
 let timesPlayed = 0;
 let gameActive = true;
 let foundWords = [];
-
 const GAME_DURATION = 60; // seconds
-let timeLeft = GAME_DURATION; // Q: how to use this in function scope when function used in interval (doesn't return anything)
+let timeLeft = GAME_DURATION;
 
 /* When page loads, get the user's stats from the session */
 async function getStats() {
@@ -26,11 +24,14 @@ async function getStats() {
     console.log(`getStats() response.data: ${JSON.stringify(response.data)}`);
 
     // Q: Should I update the DOM in a separate function? Should function be in separate file?
+    // don't generally need to separate UI from server calls.
+    // with react, it will let you sepearate concerns more easliy
+    // write function If logic used somewhere else / If one line and hard to understand / otherwise 1 line ok to keep as its own line
     $highScore.text(response.data["high_score"]);
     $timesPlayed.text(response.data["times_played"]);
 }
 
-// Q: Best location for this function call? I want to call it on page load.
+// TODO: move this and the event listner setup to new 'run.js' file
 getStats();
 
 /* When word is submitted, check it against the server */
@@ -70,7 +71,6 @@ function showResult(result, word) {
 function updateScore(word, score) {
     score += word.length;
 
-    // Q: Should I update the display in a separate function if it's just one line like this?
     $score.text(score);
     return score;
 }
@@ -114,9 +114,11 @@ async function processWordSubmission(event) {
     $wordInput.val("");
 }
 
+// TODO: put listener for DOM loaded. Then put functions that should run on start in there.
 $form.on("submit", processWordSubmission);
 
 /* Timer Code */
+// TODO: Look into .bind to pass a variable to avoid using global variable.
 function countdown() {
     // Decrement timer
     --timeLeft;
@@ -132,8 +134,6 @@ function countdown() {
         disableForm();
         submitScore(score);
     }
-
-    return timeLeft;
 }
 
 // Set up the interval
